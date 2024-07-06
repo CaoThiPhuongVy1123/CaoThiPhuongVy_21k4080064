@@ -1,0 +1,87 @@
+﻿@page "/add-category"
+@inject CaoThiPhuongVy_21k4080064.Services.CategoryService CategoryService
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="font-weight-bold">Category</h2>
+            <div class="input-group mb-3">
+                <input @bind="newCategory" type="text" class="form-control rounded-start" placeholder="New Category" />
+                <button class="btn btn-dark rounded-end" @onclick="OnAddCategory">Add</button>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h2 class="font-weight-bold">My Category</h2>
+            <ul class="list-group">
+                @foreach (var category in categories)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center shadow-sm rounded">
+                        @if (editCategory == category)
+                        {
+                            <div class="input-group">
+                                <input @bind="editCategoryValue" type="text" class="form-control rounded-start" placeholder="Edit Category" />
+                                <button class="btn btn-dark rounded-end" @onclick="() => OnUpdateCategory(category)">Save</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <span>@category</span>
+                            <div>
+                                <button class="btn btn-dark btn-sm me-2 rounded" @onclick="() => OnEditCategory(category)">Edit</button>
+                                <button class="btn btn-secondary btn-sm rounded" @onclick="() => OnDeleteCategory(category)">Delete</button>
+                            </div>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string newCategory;
+    private string editCategory;
+    private string editCategoryValue;
+    private List<string> categories;
+
+    protected override void OnInitialized()
+    {
+        categories = CategoryService.GetCategories();
+        CategoryService.OnChange += StateHasChanged;
+    }
+
+    private void OnAddCategory()
+    {
+        if (!string.IsNullOrWhiteSpace(newCategory))
+        {
+            CategoryService.AddCategory(newCategory);
+            newCategory = string.Empty;
+        }
+    }
+
+    private void OnEditCategory(string category)
+    {
+        editCategory = category;
+        editCategoryValue = category;
+    }
+
+    private void OnUpdateCategory(string category)
+    {
+        if (!string.IsNullOrWhiteSpace(editCategoryValue))
+        {
+            CategoryService.UpdateCategory(category, editCategoryValue);
+            editCategory = null;
+            editCategoryValue = null;
+        }
+    }
+
+    private void OnDeleteCategory(string category)
+    {
+        CategoryService.DeleteCategory(category);
+    }
+
+    public void Dispose()
+    {
+        CategoryService.OnChange -= StateHasChanged;
+    }
+}

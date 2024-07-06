@@ -1,0 +1,84 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>CaoThiPhuongVy_21k4080064</PageTitle>
+
+<div class="page">
+    <header class="topnav">
+        <div class="logo">
+            <a href="/todo" class="active">To Do</a>
+        </div>
+        <div class="nav-links">
+            <a href="/todo">Todo List</a>
+            <a href="/add-category">Add Category</a>
+
+        </div>
+    </header>
+
+    <main class="content">
+        <article class="px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<style>
+    body, html, .page {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    .topnav {
+        display: flex;
+        justify-content: space-between; /* Căn đều logo và các nút */
+        background-color: #000; /* Đổi thành màu đen */
+        padding: 14px 16px;
+        align-items: center;
+    }
+
+        .topnav .logo {
+            flex-shrink: 0; /* Đảm bảo logo không bị co lại */
+        }
+
+            .topnav .logo a {
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: 22px;
+                font-weight: bold;
+            }
+
+                .topnav .logo a.active {
+                    background-color: #333; /* Màu đen nhạt hơn khi active */
+                }
+
+        .topnav .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-grow: 1; /* Đảm bảo các liên kết chiếm khoảng trống còn lại */
+            justify-content: flex-end; /* Đẩy các liên kết sang phải */
+        }
+
+            .topnav .nav-links a {
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: 17px;
+            }
+
+                .topnav .nav-links a:hover {
+                    background-color: #333; /* Màu đen nhạt hơn khi hover */
+                    color: white;
+                }
+
+    .content {
+        padding-top: 10px;
+    }
+</style>
+
+@code {
+    // Bất kỳ mã C# nào bạn cần thêm cho MainLayout sẽ ở đây.
+}

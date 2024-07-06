@@ -1,0 +1,36 @@
+﻿@page "/"
+@namespace CaoThiPhuongVy_21k4080064.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+}
+
+<component type="typeof(App)" render-mode="ServerPrerendered" />
+
+<!-- Thêm mã JavaScript vào đây -->
+<script>
+    function requestNotificationPermission() {
+        return new Promise((resolve, reject) => {
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notification");
+                resolve(false);
+            } else if (Notification.permission === "granted") {
+                resolve(true);
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then((permission) => {
+                    if (permission === "granted") {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                });
+            }
+        });
+    }
+
+    function showNotification(title, options) {
+        if (Notification.permission === "granted") {
+            new Notification(title, options);
+        }
+    }
+</script>

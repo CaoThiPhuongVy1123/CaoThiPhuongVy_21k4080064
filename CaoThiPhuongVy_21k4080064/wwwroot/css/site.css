@@ -1,0 +1,233 @@
+﻿<style >
+body {
+    background-color: white;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    padding: 5px 10px;
+    background-color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+    .search-container input {
+        border: none;
+        outline: none;
+        width: 100%;
+        padding: 5px;
+        border-radius: 25px;
+        font-size: 16px;
+    }
+
+    .search-container svg {
+        width: 20px;
+        height: 20px;
+        fill: #000;
+    }
+
+.container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.ml-2 {
+    margin-left: 10px;
+}
+
+.rounded-input {
+    border-radius: 15px;
+}
+
+.rounded-button {
+    border-radius: 15px;
+}
+
+.list-group-item {
+    border-radius: 15px;
+    margin-bottom: 10px; /* T?o kho?ng cách gi?a các m?c */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.list-group {
+    border-radius: 15px; /* Bo tròn toàn b? danh sách */
+}
+
+.accordion-button {
+    border-radius: 15px;
+}
+
+.form-control {
+    border-radius: 15px;
+}
+
+.form-select {
+    border-radius: 15px;
+}
+
+.btn {
+    border-radius: 15px;
+}
+
+.container-fluid {
+    background-color: white;
+}
+
+.btn-black {
+    background-color: black;
+    color: white;
+    border: none;
+}
+
+.btn-maroon {
+    background-color: #800000;
+    color: white;
+    border: none;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+
+.me-2 {
+    margin-right: .5rem;
+}
+
+.ms-2 {
+    margin-left: .5rem;
+}
+
+.ms-3 {
+    margin-left: 1rem;
+}
+
+.d-flex {
+    display: flex;
+    align-items: center;
+}
+
+.flex-grow-1 {
+    flex-grow: 1;
+}
+
+.btn-outline-warning {
+    border-color: #ffc107;
+    color: #ffc107;
+}
+
+.border-start {
+    border-left: 1px solid #ccc;
+}
+
+.ps-3 {
+    padding-left: 1rem;
+}
+
+.accordion-header {
+    text-align: center;
+}
+
+.accordion-button {
+    font-size: 24px; /* Thay đổi kích thước phông chữ */
+    font-weight: bold; /* In đậm tiêu đề */
+    justify-content: center; /* Căn giữa tiêu đề */
+    text-align: center;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    border: 2px solid #ccc;
+    border-radius: 25px;
+    padding: 5px 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 25px;
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    color: #aaa;
+}
+
+    .search-icon:hover {
+        color: #333;
+    }
+
+.container {
+    margin-top: 2rem;
+}
+
+h2 {
+    font-weight: bold;
+}
+
+.input-group .btn {
+    margin-left: 0.5rem;
+}
+
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-group .btn {
+    margin-right: 0.5rem;
+}
+
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+/* Ensure toolbar has a fixed position and is aligned to the right */
+.toolbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 200px; /* Adjust width as needed */
+    height: 100%;
+    background-color: #000; /* Adjust background color as needed */
+    color: #fff;
+}
+
+/* Ensure content is adjusted to make space for toolbar */
+.content {
+    margin-right: 200px; /* This should match the width of your toolbar */
+}
+@media (max-width: 768px) {
+    .toolbar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .content {
+        margin-right: 0;
+    }
+}
+
+
+</style >

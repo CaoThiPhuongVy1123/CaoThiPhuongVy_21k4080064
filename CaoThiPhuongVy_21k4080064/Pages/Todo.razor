@@ -1,0 +1,492 @@
+﻿
+@page "/todo"
+@inject CaoThiPhuongVy_21k4080064.Services.CategoryService CategoryService
+@inject CaoThiPhuongVy_21k4080064.Services.TodoService TodoService
+@inject IJSRuntime JSRuntime
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Lists</title>
+    <style>
+        body {
+            background-color: white;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            padding: 5px 10px;
+            background-color: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+            .search-container input {
+                border: none;
+                outline: none;
+                width: 100%;
+                padding: 5px;
+                border-radius: 25px;
+                font-size: 16px;
+            }
+
+            .search-container svg {
+                width: 20px;
+                height: 20px;
+                fill: #000;
+            }
+
+        .container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .ml-2 {
+            margin-left: 10px;
+        }
+
+        .rounded-input {
+            border-radius: 15px;
+        }
+
+        .rounded-button {
+            border-radius: 15px;
+        }
+
+        .list-group-item {
+            border-radius: 15px;
+            margin-bottom: 10px; /* Tạo khoảng cách giữa các mục */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .list-group {
+            border-radius: 15px; /* Bo tròn toàn bộ danh sách */
+        }
+
+        .accordion-button {
+            border-radius: 15px;
+        }
+
+        .form-control {
+            border-radius: 15px;
+        }
+
+        .form-select {
+            border-radius: 15px;
+        }
+
+        .btn {
+            border-radius: 15px;
+        }
+
+        .container-fluid {
+            background-color: white;
+        }
+
+        .btn-black {
+            background-color: black;
+            color: white;
+            border: none;
+        }
+
+     
+
+        .form-check {
+            display: flex;
+            align-items: center;
+        }
+
+        .text-muted {
+            color: #6c757d;
+        }
+
+        .me-2 {
+            margin-right: .5rem;
+        }
+
+        .ms-2 {
+            margin-left: .5rem;
+        }
+
+        .ms-3 {
+            margin-left: 1rem;
+        }
+
+        .d-flex {
+            display: flex;
+            align-items: center;
+        }
+
+        .flex-grow-1 {
+            flex-grow: 1;
+        }
+
+        .btn-outline-warning {
+            border-color: #ffc107;
+            color: #ffc107;
+        }
+
+        .border-start {
+            border-left: 1px solid #ccc;
+        }
+
+        .ps-3 {
+            padding-left: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-3 border bg-light">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <div class="search-container">
+                        <input placeholder="Search Title List" @bind="searchListKeyword" class="form-control search-input" />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-search search-icon" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                        </svg>
+                    </div>
+
+                    <h1 class="text-dark text-center">My Title List</h1>
+                    <div class="container">
+                        <input placeholder="New List Title" @bind="newListTitle" class="form-control rounded-input" />
+                        <button class="btn btn-dark ml-2 rounded-button" @onclick="AddNewList">Add</button>
+                    </div>
+                </div>
+                <ul class="list-group">
+                    @foreach (var todoList in FilteredTodoLists)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center shadow-sm">
+                            @if (todoList.IsEditing)
+                            {
+                                <input type="text" @bind="todoList.Title" class="form-control me-2 rounded-input" />
+                                <button class="btn btn-secondary rounded-button" @onclick="@(() => SaveListEdit(todoList))">Save</button>
+                            }
+                            else
+                            {
+                                <span @onclick="() => SelectList(todoList)" style="cursor: pointer;">
+                                    @todoList.Title
+                                </span>
+                                <div>
+                                    <button class="btn btn-outline-dark ms-2 rounded-button" @onclick="@(() => EditList(todoList))">Edit</button>
+                                    <button class="btn btn-outline-dark ms-2 rounded-button" @onclick="@(() => DeleteList(todoList))">Delete</button>
+                                </div>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-md-9">
+                @if (selectedList != null)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading{selectedList.Title.Replace(" ", "")}")">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse{selectedList.Title.Replace(" ", "")}")" aria-expanded="false" aria-controls="@($"collapse{selectedList.Title.Replace(" ", "")}")">
+                                @selectedList.Title
+                            </button>
+                        </h2>
+                        <div id="@($"collapse{selectedList.Title.Replace(" ", "")}")" class="accordion-collapse collapse show" aria-labelledby="@($"heading{selectedList.Title.Replace(" ", "")}")" data-bs-parent="#todoListsAccordion">
+                            <div class="accordion-body">
+                                <div class="mb-3">
+                                    <input placeholder="Search..." @bind="searchKeyword" class="form-control" />
+                                    <select class="form-select mt-2" @bind="searchCategory">
+                                        <option value="">All Categories</option>
+                                        @foreach (var category in categories)
+                                        {
+                                            <option value="@category">@category</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <ul class="list-group mb-3">
+                                    @foreach (var todo in FilteredTodos)
+                                    {
+                                        <li class="list-group-item d-flex justify-content-between align-items-center shadow-sm">
+                                            <div class="d-flex align-items-center flex-grow-1">
+                                                <input type="checkbox" @onchange="@(e => ToggleDone(todo, e.Value.ToString()))" checked="@todo.IsDone" class="form-check-input me-2" />
+                                                @if (todo.IsDone)
+                                                {
+                                                    <s>@todo.Title</s>
+                                                }
+                                                else
+                                                {
+                                                    <span>@todo.Title</span>
+                                                }
+                                            </div>
+                                            <div>
+                                                @todo.Date.ToString("dd/MM/yyyy")
+                                            </div>
+                                            <div class="d-flex align-items-center ms-3 border-start ps-3">
+                                                <button type="button" class="btn btn-sm" @onclick="@(() => ToggleImportant(todo))" disabled="@todo.IsDone">
+                                                    @if (todo.IsImportant)
+                                                    {
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="gold" viewBox="0 0 24 24">
+                                                            <path d="M12 .587l3.668 7.431 8.332 1.209-6.001 5.854 1.417 8.258L12 18.897l-7.416 3.892 1.417-8.258-6.001-5.854 8.332-1.209z" />
+                                                        </svg>
+                                                    }
+                                                    else
+                                                    {
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                            <path d="M12 .587l3.668 7.431 8.332 1.209-6.001 5.854 1.417 8.258L12 18.897l-7.416 3.892 1.417-8.258-6.001-5.854 8.332-1.209z" />
+                                                        </svg>
+                                                    }
+                                                </button>
+                                            </div>
+
+                                            <div class="d-flex align-items-center ms-3 border-start ps-3">
+                                                @if (todo.IsEditing)
+                                                {
+                                                    <input type="text" @bind="todo.Title" class="form-control flex-fill mx-2 rounded-input" />
+                                                    <input type="date" @bind="todo.Date" class="form-control mx-2 rounded-input" />
+                                                    <select class="form-select mx-2 rounded-input" @bind="todo.Category">
+                                                        @foreach (var category in categories)
+                                                        {
+                                                            <option value="@category">@category</option>
+                                                        }
+                                                    </select>
+                                                    <button type="button" class="btn btn-sm btn-outline-dark ms-2 rounded-button" @onclick="@(() => SaveEdit(todo))">Save</button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="btn btn-outline-dark btn-sm me-2" @onclick="@(() => Edit(todo))">Edit</button>
+                                                }
+                                                <button type="button" class="btn btn-outline-dark btn-sm" @onclick="@(() => RemoveTodo(todo))">Delete</button>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+
+                                <div class="input-group mb-3">
+                                    <input placeholder="Add a task" @bind="newTodo" class="form-control rounded-input" style="background-color: #e9ecef; border-color: #ced4da;" />
+                                    <input type="date" @bind="date" class="form-control rounded-input" style="background-color: #e9ecef; border-color: #ced4da;" />
+                                    <select class="form-select rounded-input" @bind="newCategory">
+                                        @foreach (var category in categories)
+                                        {
+                                            <option value="@category">@category</option>
+                                        }
+                                    </select>
+                                    <button type="button" class="btn btn-outline-dark rounded-button" @onclick="AddTodo">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p>Please select a list to view or add tasks.</p>
+                }
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
+
+<style>
+    .done {
+        text-decoration: line-through;
+    }
+</style>
+
+@code {
+    private List<TodoList> todoLists = new();
+    private string newListTitle = string.Empty;
+    private string newTodo = string.Empty;
+    private DateTime date = DateTime.Today;
+    private string newCategory = string.Empty;
+    private TodoList? selectedList;
+    private List<string> categories;
+
+    private string searchKeyword = string.Empty;
+    private string searchCategory = string.Empty;
+    private string searchListKeyword = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = CategoryService.GetCategories();
+        CategoryService.OnChange += StateHasChanged;
+        todoLists = TodoService.GetTodoLists();
+
+        await RequestNotificationPermission();
+        await LoadDataFromLocalStorage();
+        SetupReminders();
+    }
+
+    private async Task LoadDataFromLocalStorage()
+    {
+        var savedLists = await LocalStorage.GetItemAsync<List<TodoList>>("todoLists");
+        if (savedLists != null)
+        {
+            todoLists = savedLists;
+            await TodoService.SaveTodoLists(savedLists);
+        }
+    }
+
+    private async Task SaveDataToLocalStorage()
+    {
+        await LocalStorage.SetItemAsync("todoLists", todoLists);
+    }
+
+    private async void AddNewList()
+    {
+        if (!string.IsNullOrWhiteSpace(newListTitle))
+        {
+            await TodoService.AddNewList(new TodoList { Title = newListTitle });
+            newListTitle = string.Empty;
+            await SaveDataToLocalStorage();
+        }
+    }
+
+    private void SelectList(TodoList todoList)
+    {
+        selectedList = todoList;
+    }
+
+    private async void AddTodo()
+    {
+        if (selectedList != null && !string.IsNullOrWhiteSpace(newTodo))
+        {
+            if (selectedList.Todos.Any(t => t.Title == newTodo))
+            {
+                // Handle duplicate titles if necessary
+            }
+            else
+            {
+                var newTask = new TodoItem { Title = newTodo, Date = date, Category = newCategory };
+                selectedList.Todos.Add(newTask);
+                newTodo = string.Empty;
+                date = DateTime.Today;
+                SetupReminders();
+                await SaveDataToLocalStorage();
+            }
+        }
+    }
+
+    private async void RemoveTodo(TodoItem todo)
+    {
+        selectedList?.Todos.Remove(todo);
+        SetupReminders();
+        await SaveDataToLocalStorage();
+    }
+
+    private void ToggleImportance(TodoItem todo)
+    {
+        todo.IsImportant = !todo.IsImportant;
+        SaveDataToLocalStorage();
+    }
+
+    private async void Edit(TodoItem todo)
+    {
+        todo.IsEditing = true;
+        StateHasChanged();
+        await SaveDataToLocalStorage();
+    }
+
+    private async void SaveEdit(TodoItem todo)
+    {
+        todo.IsEditing = false;
+        SetupReminders();
+        StateHasChanged();
+        await SaveDataToLocalStorage();
+    }
+
+    private void EditList(TodoList todoList)
+    {
+        todoList.IsEditing = true;
+    }
+
+    private async void SaveListEdit(TodoList todoList)
+    {
+        todoList.IsEditing = false;
+        await SaveDataToLocalStorage();
+    }
+
+    private async void DeleteList(TodoList todoList)
+    {
+        todoLists.Remove(todoList);
+        if (selectedList == todoList)
+        {
+            selectedList = null;
+        }
+        await SaveDataToLocalStorage();
+    }
+
+    private async Task RequestNotificationPermission()
+    {
+        var result = await JSRuntime.InvokeAsync<bool>("requestNotificationPermission");
+        if (!result)
+        {
+            // Handle case when user does not grant permission
+        }
+    }
+
+    private void SetupReminders()
+    {
+        foreach (var todoList in todoLists)
+        {
+            foreach (var todo in todoList.Todos)
+            {
+                if (todo.Date.Date == DateTime.Today)
+                {
+                    ShowNotification(todo.Title, todo.Date);
+                }
+            }
+        }
+    }
+
+    private async Task ShowNotification(string title, DateTime date)
+    {
+        var options = new { body = $"You have a task due on {date:dd/MM/yyyy}" };
+        await JSRuntime.InvokeVoidAsync("showNotification", title, options);
+    }
+
+    private void ToggleDone(TodoItem todo, string isChecked)
+    {
+        todo.IsDone = isChecked.ToLower() == "true";
+        SaveDataToLocalStorage();
+    }
+
+    private IEnumerable<TodoItem> FilteredTodos =>
+        selectedList?.Todos
+        .Where(todo => string.IsNullOrEmpty(searchKeyword) || todo.Title.Contains(searchKeyword, StringComparison.OrdinalIgnoreCase))
+        .Where(todo => string.IsNullOrEmpty(searchCategory) || todo.Category == searchCategory) ?? Enumerable.Empty<TodoItem>();
+
+    private IEnumerable<TodoList> FilteredTodoLists =>
+        todoLists
+        .Where(list => string.IsNullOrEmpty(searchListKeyword) || list.Title.Contains(searchListKeyword, StringComparison.OrdinalIgnoreCase));
+
+    private void ToggleImportant(TodoItem todo)
+    {
+        todo.IsImportant = !todo.IsImportant;
+        SaveDataToLocalStorage();
+    }
+
+    public class TodoItem
+    {
+        public string Title { get; set; } = string.Empty;
+        public bool IsDone { get; set; }
+        public DateTime Date { get; set; }
+        public bool IsImportant { get; set; }
+        public bool IsEditing { get; set; }
+        public string Category { get; set; } = string.Empty;
+    }
+
+    public class TodoList
+    {
+        public string Title { get; set; } = string.Empty;
+        public List<TodoItem> Todos { get; set; } = new();
+        public string SelectedCategory { get; set; } = string.Empty;
+        public bool IsEditing { get; set; }
+    }
+}
